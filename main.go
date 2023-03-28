@@ -1,66 +1,48 @@
 package main
 
 import (
-	"fmt"
+	"errors"
 	"math"
 	"time"
 
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/speaker"
-	// "github.com/faiface/beep/wav"
 )
 
-const (
-	duration  = 1 * time.Second
-	amplitude = 1.0 // Max amplitude is 1.0
-)
+type SineWave struct {
+	sampleFactor float64 // Just for ease of use so that we don't have to calculate every sample
+	phase        float64
+}
 
-func createTone(format beep.Format, frequency float64) (buffer *beep.Buffer) {
-	// Create a buffer for the audio data
-	buffer = beep.NewBuffer(format)
+func (g *SineWave) Stream(samples [][2]float64) (n int, ok bool) {
+	for i := range samples { // increment = ((2 * PI) / SampleRate) * freq
+		v := math.Sin(g.phase * 2.0 * math.Pi) // period of the wave is thus defined as: 2 * PI.
+		samples[i][0] = v
+		samples[i][1] = v
+		_, g.phase = math.Modf(g.phase + g.sampleFactor)
+	}
 
-	// Calculate the number of samples needed for the tone duration
-	numSamples := int(format.SampleRate.N(duration))
+	return len(samples), true
+}
 
-	sampNo := 0
-	tone := beep.StreamerFunc(func(samples [][2]float64) (n int, ok bool) {
-		if sampNo >= numSamples {
-			return 0, false
-		}
+func (*SineWave) Err() error {
+	return nil
+}
 
-		fmt.Printf("StreamerFunc: %d\n", sampNo)
-		for i := range samples {
-			phase := float64(sampNo) / float64(format.SampleRate) * frequency * 2.0 * math.Pi
-			samples[i][0] = amplitude * math.MaxInt16 * math.Sin(phase)
-			samples[i][1] = samples[i][0]
-			sampNo++
-			if sampNo >= numSamples {
-				break
-			}
-		}
-		return len(samples), true
-	})
+func SineTone(sr beep.SampleRate, freq float64) (beep.Streamer, error) {
+	dt := freq / float64(sr)
 
-	buffer.Append(tone)
+	if dt >= 1.0/2.0 {
+		return nil, errors.New("samplerate must be at least 2 times grater then frequency")
+	}
 
-	return
+	return &SineWave{dt, 0.1}, nil
 }
 
 func main() {
-	frequency := 1000.0 // Hz
-
-	format := beep.Format{
-		SampleRate:  beep.SampleRate(44100),
-		NumChannels: 1,
-		Precision:   2,
-	}
-
-	buffer := createTone(format, frequency)
-
-	// Create a speaker and stream the audio data to it
-	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
-	speaker.Play(buffer.Streamer(0, buffer.Len()))
-	defer speaker.Close()
-
-	select {}
+	sr := beep.SampleRate(44100)
+	speaker.Init(sr, sr.N(time.Second/10)) // sr.N(time.Second/10) = buffer size for duration 1/10 second
+	sine, _ := SineTone(sr, 1000)
+	speaker.Play(sine)
+	select {} // makes the program hang forever
 }
