@@ -7,12 +7,12 @@ type SineWave struct {
 	phase        float64
 }
 
-func (g *SineWave) Stream(samples [][2]float64) (n int, ok bool) {
+func (sw *SineWave) Stream(samples [][2]float64) (n int, ok bool) {
 	for i := range samples { // increment = ((2 * PI) / SampleRate) * freq
-		v := math.Sin(g.phase * 2.0 * math.Pi) // period of the wave is thus defined as: 2 * PI.
+		v := math.Sin(sw.phase * 2.0 * math.Pi) // period of the wave is thus defined as: 2 * PI.
 		samples[i][0] = v
 		samples[i][1] = v
-		_, g.phase = math.Modf(g.phase + g.sampleFactor)
+		_, sw.phase = math.Modf(sw.phase + sw.sampleFactor)
 	}
 
 	return len(samples), true

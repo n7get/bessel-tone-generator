@@ -1,44 +1,60 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"os"
-	"time"
+	"strconv"
 
-	"github.com/faiface/beep"
-	"github.com/faiface/beep/speaker"
+	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
+
+	"fyne.io/fyne/v2/widget"
 )
 
-const MI = 2.40466
-
 func main() {
-	deviation := 2200.0
-	var serialPort string
-	speed := 38400
-	sampleRate := 44100
+	tg := CreateToneGenerator()
 
-	sr := beep.SampleRate(sampleRate)
-	freq := deviation / MI
-	fmt.Printf("Freq: %f", freq)
-	sine, _ := CreateTone(sr, freq)
+	a := app.New()
+	w := a.NewWindow("Bessel Tone Generator")
 
-	port, err := SerialInit(serialPort, speed)
-	if err != nil {
-		os.Exit(1)
-	}
-	defer port.Close()
-
-	err = port.SetRTS(true)
-	if err != nil {
-		fmt.Println("Error setting RTS:", err)
-		return
+	startStop := widget.NewButton("Start", nil)
+	startStop.OnTapped = func() {
+		if startStop.Text == "Start" {
+			startStop.SetText("Stop")
+			tg.Start()
+		} else {
+			startStop.SetText("Start")
+			tg.Stop()
+		}
 	}
 
-	SetTX(port)
+	deviationEntry := widget.NewEntry()
+	deviationEntry.SetText(tg.GetDevation())
+	deviationEntry.Validator = func(text string) error {
+		value, err := strconv.ParseFloat(text, 64)
+		if err != nil {
+			return errors.New("value not numeric")
+		}
+		if value < 2000 || value > 3000 {
+			return errors.New("deviation value is out or range")
+		}
+		return nil
+	}
+	deviationEntry.OnChanged = func(s string) {
+		fmt.Printf("OnChanged: %s\n", s)
+		tg.SetDeviation(s)
+	}
 
-	speaker.Init(sr, sr.N(time.Second/10)) // sr.N(time.Second/10) = buffer size for duration 1/10 second
-	speaker.Play(sine)
-	select {} // makes the program hang forever
+	w.SetContent(container.NewVBox(
+		container.New(
+			layout.NewFormLayout(),
+			widget.NewLabel("Deviation"),
+			deviationEntry,
+		),
+		layout.NewSpacer(),
+		container.NewCenter(startStop),
+	))
 
-	// ClearTX(port)
+	w.ShowAndRun()
 }
