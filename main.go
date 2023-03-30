@@ -46,11 +46,33 @@ func main() {
 		tg.SetDeviation(s)
 	}
 
+	serialPorts, _ := SerialPortList()
+	serialDevEntry := widget.NewSelect(serialPorts, func(s string) {
+		tg.SetSerialPort(s)
+	})
+	serialDevEntry.SetSelected(tg.GetSerialPort())
+
+	serialSpeedEntry := widget.NewSelect([]string{"9600", "19200", "38400", "56700", "155200"}, func(s string) {
+		tg.SetSerialSpeed(s)
+	})
+	serialSpeedEntry.SetSelected(tg.GetSerialSpeed())
+
+	pttType := widget.NewSelect([]string{"NONE", "RTS", "DTR", "BOTH"}, func(s string) {
+		tg.SetPttType(s)
+	})
+	pttType.SetSelected(tg.GetPttType())
+
 	w.SetContent(container.NewVBox(
 		container.New(
 			layout.NewFormLayout(),
 			widget.NewLabel("Deviation"),
 			deviationEntry,
+			widget.NewLabel("Serial Device"),
+			serialDevEntry,
+			widget.NewLabel("Serial Speed"),
+			serialSpeedEntry,
+			widget.NewLabel("PTT Type"),
+			pttType,
 		),
 		layout.NewSpacer(),
 		container.NewCenter(startStop),

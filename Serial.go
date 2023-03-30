@@ -1,16 +1,12 @@
 package main
 
 import (
-	"log"
-
 	"go.bug.st/serial"
 )
 
-func SerialInit(serialPort string, speed int) (serial.Port, error) {
-	if serialPort == "" {
-		return nil, nil
-	}
+var port serial.Port
 
+func SerialOpen(path string, speed int) error {
 	mode := &serial.Mode{
 		BaudRate:          speed,
 		DataBits:          8,
@@ -18,40 +14,34 @@ func SerialInit(serialPort string, speed int) (serial.Port, error) {
 		InitialStatusBits: &serial.ModemOutputBits{RTS: false, DTR: false},
 	}
 
-	port, err := serial.Open(serialPort, mode)
+	var err error
+	port, err = serial.Open(path, mode)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	return port, nil
+	return nil
 }
 
-func SetTX(port serial.Port) {
-	if port == nil {
-		return
+func SetRTS(value bool) error {
+	if err := port.SetRTS(value); err != nil {
+		return err
 	}
-
-	err := port.SetRTS(true)
-	if err != nil {
-		log.Fatal("SetRTS(true) failed: ", err)
-	}
-	err = port.SetDTR(true)
-	if err != nil {
-		log.Fatal("SetDTR(true) failed: ", err)
-	}
+	return nil
 }
 
-func ClearTX(port serial.Port) {
-	if port == nil {
-		return
+func SetDTR(value bool) error {
+	if err := port.SetDTR(value); err != nil {
+		return err
 	}
+	return nil
+}
 
-	err := port.SetRTS(false)
-	if err != nil {
-		log.Fatal("SetRTS(true) failed: ", err)
-	}
-	err = port.SetDTR(false)
-	if err != nil {
-		log.Fatal("SetDTR(true) failed: ", err)
-	}
+func SerialClose() {
+	port.Close()
+	port = nil
+}
+
+func SerialPortList() ([]string, error) {
+	return serial.GetPortsList()
 }
