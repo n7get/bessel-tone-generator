@@ -36,7 +36,8 @@ type ToneGenerator struct {
 
 func CreateToneGenerator() *ToneGenerator {
 	tg := &ToneGenerator{
-		pttType: PTT_NONE,
+		serialSpeed: 9600,
+		pttType:     PTT_NONE,
 	}
 	tg.SetDeviation("2200")
 	tg.sampleRate = beep.SampleRate(SAMPLE_RATE)
@@ -163,7 +164,9 @@ func (tg *ToneGenerator) PttOff() error {
 		SetDTR(false)
 	}
 
-	SerialClose()
+	if tg.pttType != PTT_NONE {
+		SerialClose()
+	}
 
 	return nil
 }
