@@ -2,13 +2,17 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
+)
+
+const (
+	MIN_DEVIATION = 1500
+	MAX_DEVIATION = 4000
 )
 
 func CreateGui(tg *ToneGenerator) {
@@ -38,13 +42,12 @@ func CreateGui(tg *ToneGenerator) {
 		if err != nil {
 			return errors.New("value not numeric")
 		}
-		if value < 2000 || value > 3000 {
+		if value < MIN_DEVIATION || value > MAX_DEVIATION {
 			return errors.New("deviation value is out or range")
 		}
 		return nil
 	}
 	deviationEntry.OnChanged = func(s string) {
-		fmt.Printf("OnChanged: %s\n", s)
 		tg.SetDeviation(s)
 	}
 
