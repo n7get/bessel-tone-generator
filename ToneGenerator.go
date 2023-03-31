@@ -16,7 +16,7 @@ const (
 	SAMPLE_RATE = 41000
 )
 
-var SERIAL_SPEEDS = []int64{9600, 19200, 38400, 56700, 115200}
+var SERIAL_SPEEDS = []int64{4800, 9600, 19200, 38400, 56700, 115200}
 
 const (
 	PTT_NONE = iota
@@ -109,7 +109,7 @@ func (tg *ToneGenerator) SetSerialSpeed(value string) error {
 		return err
 	}
 
-	if slices.IndexFunc(SERIAL_SPEEDS, func(i int64) bool { return i == speed }) == -1 {
+	if slices.Contains(SERIAL_SPEEDS, speed) {
 		return errors.New("unknown serial port speed")
 	}
 
