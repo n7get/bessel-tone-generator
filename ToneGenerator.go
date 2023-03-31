@@ -170,3 +170,7 @@ func (tg *ToneGenerator) PttOff() error {
 
 	return nil
 }
+
+func (tg *ToneGenerator) CanStart() bool {
+	return tg.pttType == PTT_NONE || len(tg.serialPort) > 0
+}

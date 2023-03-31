@@ -55,6 +55,11 @@ func CreateGui(tg *ToneGenerator) {
 	serialPorts, _ := SerialPortList()
 	serialDevEntry := widget.NewSelect(serialPorts, func(s string) {
 		tg.SetSerialPort(s)
+		if tg.CanStart() {
+			startStop.Enable()
+		} else {
+			startStop.Disable()
+		}
 	})
 	serialDevEntry.SetSelected(tg.GetSerialPort())
 
@@ -71,6 +76,11 @@ func CreateGui(tg *ToneGenerator) {
 			serialDevEntry.Enable()
 		} else {
 			serialDevEntry.Disable()
+		}
+		if tg.CanStart() {
+			startStop.Enable()
+		} else {
+			startStop.Disable()
 		}
 	})
 	pttTypeSelect.SetSelected(tg.GetPttType())
