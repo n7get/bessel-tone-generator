@@ -12,6 +12,13 @@ This program takes as an input the desired deviation and calculates the frequenc
 1. Select the audio device depending on the operating system.  Unfortunately, the audio library used for `btg` does not have a provision to select the audio device to open, so this has to be done manually.
 1. Set the desired deviation.
 1. Set the optional PTT type and the serial port if PTT is something other than NONE.
-1. Toggle the PTT either using RTS/DTR or manually on the transmitter.
-1. Set the audio drive level as appropriate for your setup.
+1. Toggle the PTT either using RTS/DTR, VOX or manually on the transmitter.
+1. Set the audio drive level as to get the lowest center carrier (i.e. Bessel Null).
 1. Toggle the PTT off when done.
+
+## Building
+I've mostly developed this under Mac, I'm mostly using it on Windows.  I have not tried it under Linux yet.
+
+To build under Windows you'll have to follow the install instructions for the fyne library:
+
+`https://developer.fyne.io/started/`
