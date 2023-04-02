@@ -1,8 +1,8 @@
 # Bessel Tone Generator
 
-Bessel-tone-generator or `btg` is a utility for using the Bessel Null technique to set the FM deviation for digital modes such as AFSK for packet.
+Bessel-tone-generator or `btg` is a very simple utility, it takes as input a deviation and outputs a sine wave with the frequency of `deviation / MI` where MI = 2.40466.
 
-This program takes as an input the desired deviation and calculates the frequency of an audio tone to emit based on an MI of 2.40466.  It can also optionally toggle PTT using either RTS and/or DTR.  
+`btg` can also optionally toggle PTT using either RTS and/or DTR.  
 
 `btg` is written in the Go language so it's cross platform.
 
@@ -13,12 +13,12 @@ This program takes as an input the desired deviation and calculates the frequenc
 1. Set the desired deviation.
 1. Set the optional PTT type and the serial port if PTT is something other than NONE.
 1. Toggle the PTT either using RTS/DTR, VOX or manually on the transmitter.
-1. Set the audio drive level as to get the lowest center carrier (i.e. Bessel Null).
+1. Set the audio drive level as to get the lowest center carrier peak (i.e. Bessel Null).
 1. Toggle the PTT off when done.
 
 ## Building
 I've mostly developed this under Mac, I'm mostly using it on Windows.  I have not tried it under Linux yet.
 
-To build under Windows you'll have to follow the install instructions for the fyne library:
+To build under Windows you'll have to first follow the install instructions for the fyne library:
 
 `https://developer.fyne.io/started/`
