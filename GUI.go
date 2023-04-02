@@ -4,6 +4,7 @@ import (
 	"errors"
 	"strconv"
 
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
@@ -19,6 +20,7 @@ func CreateGui(tg *ToneGenerator) {
 
 	a := app.New()
 	w := a.NewWindow("Bessel Tone Generator")
+	w.Resize(fyne.NewSize(300, 200))
 
 	var startStop *widget.Button
 	startStop = widget.NewButton("Start", func() {
