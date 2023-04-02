@@ -22,3 +22,5 @@ I've mostly developed this under Mac, I'm mostly using it on Windows.  I have no
 To build under Windows you'll have to first follow the install instructions for the fyne library:
 
 `https://developer.fyne.io/started/`
+
+I've included a pre-built executable for Windows as bin/btg.exe.
