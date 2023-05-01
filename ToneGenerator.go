@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/faiface/beep"
+	"github.com/faiface/beep/effects"
 	"github.com/faiface/beep/speaker"
 	"golang.org/x/exp/slices"
 )
@@ -122,7 +123,13 @@ func (tg *ToneGenerator) Start() error {
 	tg.PttOn()
 
 	sine, _ := CreateTone(tg.sampleRate, tg.frequency)
-	speaker.Play(sine)
+	volume := &effects.Volume{
+		Streamer: sine,
+		Base:     2,
+		Volume:   -0.28,
+		Silent:   false,
+	}
+	speaker.Play(volume)
 
 	return nil
 }
