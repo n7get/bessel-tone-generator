@@ -38,7 +38,7 @@ type ToneGenerator struct {
 
 func CreateToneGenerator() *ToneGenerator {
 	tg := &ToneGenerator{
-		level:       0.72,
+		level:       0.67,
 		serialSpeed: 9600,
 		pttType:     PTT_NONE,
 	}
@@ -139,13 +139,10 @@ func (tg *ToneGenerator) Start() error {
 	tg.PttOn()
 
 	sine, _ := CreateTone(tg.sampleRate, tg.frequency)
-	level := &effects.Volume{
+	level := &effects.Gain{
 		Streamer: sine,
-		Base:     1,
-		Volume:   -(1 - tg.level),
-		Silent:   false,
+		Gain:     -(1 - tg.level),
 	}
-	fmt.Printf("Volume: %f\n", level.Volume)
 	speaker.Play(level)
 
 	return nil
