@@ -53,6 +53,23 @@ func CreateGui(tg *ToneGenerator) {
 		tg.SetDeviation(s)
 	}
 
+	levelLabel := widget.NewLabel("Volume Level")
+	levelEntry := widget.NewEntry()
+	levelEntry.SetText(tg.GetLevel())
+	levelEntry.Validator = func(text string) error {
+		value, err := strconv.ParseFloat(text, 64)
+		if err != nil {
+			return errors.New("value not numeric")
+		}
+		if value <= 0 || value > 1.0 {
+			return errors.New("level value is out or range")
+		}
+		return nil
+	}
+	levelEntry.OnChanged = func(s string) {
+		tg.SetLevel(s)
+	}
+
 	serialDevLabel := widget.NewLabel("Serial Device")
 	serialPorts, _ := SerialPortList()
 	serialDevEntry := widget.NewSelect(serialPorts, func(s string) {
@@ -92,6 +109,8 @@ func CreateGui(tg *ToneGenerator) {
 			layout.NewFormLayout(),
 			deviationLabel,
 			deviationEntry,
+			levelLabel,
+			levelEntry,
 			pttTypeLabel,
 			pttTypeSelect,
 			serialDevLabel,

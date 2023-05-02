@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/faiface/beep"
+	"github.com/faiface/beep/effects"
 	"github.com/faiface/beep/speaker"
 	"golang.org/x/exp/slices"
 )
@@ -28,6 +29,7 @@ const (
 type ToneGenerator struct {
 	deviation   float64
 	frequency   float64
+	level       float64
 	serialPort  string
 	serialSpeed int
 	sampleRate  beep.SampleRate
@@ -36,6 +38,7 @@ type ToneGenerator struct {
 
 func CreateToneGenerator() *ToneGenerator {
 	tg := &ToneGenerator{
+		level:       0.67,
 		serialSpeed: 9600,
 		pttType:     PTT_NONE,
 	}
@@ -65,6 +68,20 @@ func (tg *ToneGenerator) SetDeviation(s string) error {
 
 func (tg *ToneGenerator) GetFrequency() string {
 	return fmt.Sprintf("%.0f", tg.frequency)
+}
+
+func (tg *ToneGenerator) GetLevel() string {
+	return fmt.Sprintf("%.02f", tg.level)
+}
+func (tg *ToneGenerator) SetLevel(s string) error {
+	value, err := strconv.ParseFloat(s, 64)
+	if err != nil {
+		return err
+	}
+
+	tg.level = value
+
+	return nil
 }
 
 func (tg *ToneGenerator) GetPttType() string {
@@ -122,7 +139,11 @@ func (tg *ToneGenerator) Start() error {
 	tg.PttOn()
 
 	sine, _ := CreateTone(tg.sampleRate, tg.frequency)
-	speaker.Play(sine)
+	level := &effects.Gain{
+		Streamer: sine,
+		Gain:     -(1 - tg.level),
+	}
+	speaker.Play(level)
 
 	return nil
 }
