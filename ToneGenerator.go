@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/faiface/beep"
-	"github.com/faiface/beep/effects"
 	"github.com/faiface/beep/speaker"
 	"golang.org/x/exp/slices"
 )
@@ -138,12 +137,8 @@ func (tg *ToneGenerator) SetSerialSpeed(value string) error {
 func (tg *ToneGenerator) Start() error {
 	tg.PttOn()
 
-	sine, _ := CreateTone(tg.sampleRate, tg.frequency)
-	level := &effects.Gain{
-		Streamer: sine,
-		Gain:     -(1 - tg.level),
-	}
-	speaker.Play(level)
+	sine, _ := CreateTone(tg.sampleRate, tg.frequency, tg.level)
+	speaker.Play(sine)
 
 	return nil
 }
